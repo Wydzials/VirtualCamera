@@ -1,9 +1,9 @@
-package pl.wydzials;
+package pl.wydzials.virtualcamera;
 
-import pl.wydzials.model.Line;
-import pl.wydzials.model.Model;
-import pl.wydzials.model.Point;
-import pl.wydzials.reader.DataReader;
+import pl.wydzials.virtualcamera.model.Line;
+import pl.wydzials.virtualcamera.model.Model;
+import pl.wydzials.virtualcamera.model.Point;
+import pl.wydzials.virtualcamera.reader.ModelCreator;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -33,12 +33,11 @@ public class Sketch extends PApplet {
     public void setup() {
         frameRate(60);
 
-        DataReader reader = new DataReader();
-        reader.readLinesFromFile("data/lines.json");
-        reader.readCubesFromFile("data/cubes.json");
-        //reader.readCubesFromFile("data/rubiks-cube.json");
-        reader.generateRandomCubes(20);
-        model = reader.getModel();
+        ModelCreator creator = new ModelCreator();
+        creator.readLinesFromFile("data/lines.json");
+        creator.readCubesFromFile("data/cubes.json");
+        creator.generateRandomCubes(20);
+        model = creator.getModel();
     }
 
     public void draw() {

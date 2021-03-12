@@ -1,4 +1,4 @@
-package pl.wydzials;
+package pl.wydzials.virtualcamera;
 
 import processing.core.PApplet;
 

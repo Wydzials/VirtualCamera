@@ -1,4 +1,4 @@
-package pl.wydzials.model;
+package pl.wydzials.virtualcamera.model;
 
 
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class Line {
 
     @Override
     public String toString() {
-        return "Line3D(" + point1 + ", " + point2 + ")";
+        return "Line(" + point1 + ", " + point2 + ")";
     }
 
 }

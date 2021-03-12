@@ -1,4 +1,4 @@
-package pl.wydzials.reader;
+package pl.wydzials.virtualcamera.reader;
 
 import java.util.HashSet;
 import java.util.Set;

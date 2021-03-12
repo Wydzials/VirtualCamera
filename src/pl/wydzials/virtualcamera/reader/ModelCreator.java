@@ -1,16 +1,16 @@
-package pl.wydzials.reader;
+package pl.wydzials.virtualcamera.reader;
 
 import com.google.gson.Gson;
-import pl.wydzials.model.Line;
-import pl.wydzials.model.Model;
-import pl.wydzials.model.Point;
+import pl.wydzials.virtualcamera.model.Line;
+import pl.wydzials.virtualcamera.model.Model;
+import pl.wydzials.virtualcamera.model.Point;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DataReader {
+public class ModelCreator {
     private final Gson gson = new Gson();
 
     private final Map<String, Point> points = new HashMap<>();
@@ -32,6 +32,27 @@ public class DataReader {
         }
     }
 
+    public Model getModel() {
+        System.out.println("Loaded objects:");
+        System.out.println(points.size() + " points");
+        System.out.println(lines.size() + " lines");
+
+        return new Model(points, lines);
+    }
+
+    public void generateRandomCubes(int n) {
+        Random r = new Random();
+        for (int i = 0; i < n; i++) {
+            double x = r.nextDouble() * 20000;
+            double y = r.nextDouble() * 20000;
+            double z = r.nextDouble() * 20000;
+            double len = r.nextDouble() * 2000 + 500;
+
+            CubeDTO cube = new CubeDTO(x, y, z, len, len, len);
+            addLines(cube.toLines());
+        }
+    }
+
     private void addLines(Set<LineDTO> lineDTOs) {
         for (LineDTO line : lineDTOs) {
             Point point1 = new Point(line.x1, line.y1, line.z1);
@@ -47,36 +68,14 @@ public class DataReader {
         }
     }
 
-    public Model getModel() {
-        System.out.println("Loaded objects:");
-        System.out.println(points.size() + " points");
-        System.out.println(lines.size() + " lines");
-
-        return new Model(points, lines);
-    }
-
     private String readFile(String path) {
-        System.out.println("Reading file '" + path + "'");
         try {
             return new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {
+            System.out.println("Cannot read file '" + path + "'");
             e.printStackTrace();
         }
         System.exit(-1);
         return null;
-    }
-
-    public void generateRandomCubes(int n) {
-        System.out.println("Generating " + n + " cubes...");
-        Random r = new Random();
-        for (int i = 0; i < n; i++) {
-            double x = r.nextDouble() * 20000;
-            double y = r.nextDouble() * 20000;
-            double z = r.nextDouble() * 20000;
-            double len = r.nextDouble() * 2000 + 500;
-
-            CubeDTO cube = new CubeDTO(x, y, z, len, len, len);
-            addLines(cube.toLines());
-        }
     }
 }

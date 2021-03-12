@@ -1,4 +1,4 @@
-package pl.wydzials.model;
+package pl.wydzials.virtualcamera.model;
 
 
 import java.util.Objects;
@@ -76,7 +76,7 @@ public class Point {
 
     @Override
     public String toString() {
-        return "Point3D(" + key() + ")";
+        return "Point(" + key() + ")";
     }
 
     @Override
@@ -95,6 +95,4 @@ public class Point {
     public String key() {
         return "%s-%s-%s".formatted(x, y, z);
     }
-
-
 }

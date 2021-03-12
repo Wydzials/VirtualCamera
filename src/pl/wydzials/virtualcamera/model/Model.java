@@ -1,4 +1,4 @@
-package pl.wydzials.model;
+package pl.wydzials.virtualcamera.model;
 
 import java.util.Map;
 import java.util.Set;
