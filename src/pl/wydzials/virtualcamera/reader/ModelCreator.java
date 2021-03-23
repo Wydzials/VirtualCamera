@@ -43,9 +43,9 @@ public class ModelCreator {
     public void generateRandomCubes(int n) {
         Random r = new Random();
         for (int i = 0; i < n; i++) {
-            double x = r.nextDouble() * 20000;
-            double y = r.nextDouble() * 20000;
-            double z = r.nextDouble() * 20000;
+            double x = r.nextDouble() * 40000 - 20000;
+            double y = r.nextDouble() * 40000 - 20000;
+            double z = r.nextDouble() * 40000 - 20000;
             double len = r.nextDouble() * 2000 + 500;
 
             CubeDTO cube = new CubeDTO(x, y, z, len, len, len);
@@ -73,7 +73,6 @@ public class ModelCreator {
             return new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {
             System.out.println("Cannot read file '" + path + "'");
-            e.printStackTrace();
         }
         System.exit(-1);
         return null;

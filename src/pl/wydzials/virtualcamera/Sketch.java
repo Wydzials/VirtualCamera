@@ -32,11 +32,10 @@ public class Sketch extends PApplet {
 
     public void setup() {
         frameRate(60);
+        surface.setTitle("VirtualCamera");
 
         ModelCreator creator = new ModelCreator();
-        creator.readLinesFromFile("data/lines.json");
-        creator.readCubesFromFile("data/cubes.json");
-        creator.generateRandomCubes(20);
+        creator.readCubesFromFile("data/model.json");
         model = creator.getModel();
     }
 
