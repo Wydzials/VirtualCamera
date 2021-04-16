@@ -45,4 +45,9 @@ public class Face {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return "Face(%d,%d,%d)".formatted(color.getRed(), color.getBlue(), color.getGreen());
+    }
 }

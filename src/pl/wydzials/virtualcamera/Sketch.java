@@ -1,5 +1,7 @@
 package pl.wydzials.virtualcamera;
 
+import pl.wydzials.virtualcamera.bsp.BinarySearchPartitioning;
+import pl.wydzials.virtualcamera.bsp.TreeNode;
 import pl.wydzials.virtualcamera.model.Face;
 import pl.wydzials.virtualcamera.model.Line;
 import pl.wydzials.virtualcamera.model.Model;
@@ -14,7 +16,7 @@ public class Sketch extends PApplet {
 
     Model model;
     ArrayList<Line> projectedLines = new ArrayList<>();
-    ArrayList<Face> projectedFaces = new ArrayList<>();
+    TreeNode<Face> facesTree;
 
     double focalChange = 0;
     double focalLength = 400;
@@ -39,8 +41,11 @@ public class Sketch extends PApplet {
 
         ModelCreator creator = new ModelCreator();
         creator.readCubesFromFile("data/model.json");
-        creator.generateRandomCubes(50);
+        creator.generateRandomCubes(10);
         model = creator.getModel();
+
+        facesTree = BinarySearchPartitioning.buildTree(model.getFaces());
+        System.out.println(facesTree);
     }
 
     public void draw() {
@@ -53,7 +58,7 @@ public class Sketch extends PApplet {
             updatePoints();
             projectLines();
 
-            renderFaces();
+            renderFaces(facesTree);
             renderLines();
             renderText();
         }
@@ -116,23 +121,29 @@ public class Sketch extends PApplet {
         }
     }
 
-    private void renderFaces() {
-        projectedFaces.clear();
+    private void renderFaces(TreeNode<Face> tree) {
+        if (tree == null) {
+            return;
+        }
         noStroke();
 
-        for (Face face : model.getFaces()) {
-            if (areVisible(face.getPoints())) {
-                float[] quadPoints = new float[8];
-                for (int n = 0; n < 4; n++) {
-                    Point projected = projectPoint(face.getPoint(n));
-                    quadPoints[2 * n] = (float) projected.x;
-                    quadPoints[2 * n + 1] = (float) projected.y;
-                }
+        renderFaces(tree.left);
+        renderFace(tree.key);
+        renderFaces(tree.right);
+    }
 
-                fill(face.getColor().getRed(), face.getColor().getBlue(), face.getColor().getGreen());
-                quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
-                        quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
+    private void renderFace(Face face) {
+        if (areVisible(face.getPoints())) {
+            float[] quadPoints = new float[8];
+            for (int n = 0; n < 4; n++) {
+                Point projected = projectPoint(face.getPoint(n));
+                quadPoints[2 * n] = (float) projected.x;
+                quadPoints[2 * n + 1] = (float) projected.y;
             }
+
+            fill(face.getColor().getRed(), face.getColor().getBlue(), face.getColor().getGreen());
+            quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
+                    quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
         }
     }
 
