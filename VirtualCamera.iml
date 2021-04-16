@@ -10,5 +10,7 @@
     <orderEntry type="library" name="processing-core" level="project" />
     <orderEntry type="library" name="ejml-v0" level="project" />
     <orderEntry type="library" name="gson-2.8.6" level="project" />
+    <orderEntry type="library" name="core" level="project" />
+    <orderEntry type="library" name="gson-2.8.2" level="project" />
   </component>
 </module>
