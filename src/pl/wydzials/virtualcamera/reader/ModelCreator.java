@@ -1,6 +1,7 @@
 package pl.wydzials.virtualcamera.reader;
 
 import com.google.gson.Gson;
+import pl.wydzials.virtualcamera.model.Face;
 import pl.wydzials.virtualcamera.model.Line;
 import pl.wydzials.virtualcamera.model.Model;
 import pl.wydzials.virtualcamera.model.Point;
@@ -15,6 +16,7 @@ public class ModelCreator {
 
     private final Map<String, Point> points = new HashMap<>();
     private final Set<Line> lines = new HashSet<>();
+    private final Set<Face> faces = new HashSet<>();
 
     public void readLinesFromFile(String path) {
         String file = readFile(path);
@@ -29,6 +31,7 @@ public class ModelCreator {
 
         for (CubeDTO c : cubeDTOs) {
             addLines(c.toLines());
+            addFaces(c.toFaces());
         }
     }
 
@@ -36,8 +39,9 @@ public class ModelCreator {
         System.out.println("Loaded objects:");
         System.out.println(points.size() + " points");
         System.out.println(lines.size() + " lines");
+        System.out.println(faces.size() + " faces");
 
-        return new Model(points, lines);
+        return new Model(points, lines, faces);
     }
 
     public void generateRandomCubes(int n) {
@@ -50,6 +54,7 @@ public class ModelCreator {
 
             CubeDTO cube = new CubeDTO(x, y, z, len, len, len);
             addLines(cube.toLines());
+            addFaces(cube.toFaces());
         }
     }
 
@@ -66,6 +71,21 @@ public class ModelCreator {
             }
             lines.add(new Line(points.get(point1.key()), points.get(point2.key())));
         }
+    }
+
+    private void addFaces(Set<Face> faces) {
+        for (Face face : faces) {
+            for (int n = 0; n < 4; n++) {
+                Point point = face.getPoint(n);
+
+                if (!points.containsValue(point)) {
+                    points.put(point.key(), point);
+                } else {
+                    face.setPoint(n, points.get(point.key()));
+                }
+            }
+        }
+        this.faces.addAll(faces);
     }
 
     private String readFile(String path) {

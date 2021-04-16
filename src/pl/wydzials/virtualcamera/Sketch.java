@@ -1,5 +1,6 @@
 package pl.wydzials.virtualcamera;
 
+import pl.wydzials.virtualcamera.model.Face;
 import pl.wydzials.virtualcamera.model.Line;
 import pl.wydzials.virtualcamera.model.Model;
 import pl.wydzials.virtualcamera.model.Point;
@@ -12,6 +13,7 @@ public class Sketch extends PApplet {
 
     Model model;
     ArrayList<Line> projectedLines = new ArrayList<>();
+    ArrayList<Face> projectedFaces = new ArrayList<>();
 
     double focalChange = 0;
     double focalLength = 400;
@@ -36,6 +38,7 @@ public class Sketch extends PApplet {
 
         ModelCreator creator = new ModelCreator();
         creator.readCubesFromFile("data/model.json");
+        creator.generateRandomCubes(50);
         model = creator.getModel();
     }
 
@@ -49,6 +52,7 @@ public class Sketch extends PApplet {
             updatePoints();
             projectLines();
 
+            renderFaces();
             renderLines();
             renderText();
         }
@@ -81,13 +85,34 @@ public class Sketch extends PApplet {
 
     private void projectLines() {
         projectedLines.clear();
-
         for (Line line : model.lines) {
             if (isVisible(line.point1) && isVisible(line.point2)) {
                 Point p1 = projectPoint(line.point1);
                 Point p2 = projectPoint(line.point2);
 
                 projectedLines.add(new Line(p1, p2));
+            }
+        }
+    }
+
+    private void renderFaces() {
+        projectedFaces.clear();
+        fill(204, 102, 0);
+        noStroke();
+
+        for (Face face : model.faces) {
+            if (isVisible(face.getPoint(0)) && isVisible(face.getPoint(1))
+                    && isVisible(face.getPoint(2)) && isVisible(face.getPoint(3))) {
+                float[] quadPoints = new float[8];
+
+                for (int n = 0; n < 4; n++) {
+                    Point projected = projectPoint(face.getPoint(n));
+                    quadPoints[2 * n] = (float) projected.x;
+                    quadPoints[2 * n + 1] = (float) projected.y;
+                }
+
+                quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
+                        quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
             }
         }
     }
@@ -106,6 +131,7 @@ public class Sketch extends PApplet {
 
     private void renderLines() {
         strokeCap(ROUND);
+        stroke(0, 0, 0);
         for (Line line : projectedLines) {
             Point p1 = line.point1;
             Point p2 = line.point2;
