@@ -8,6 +8,7 @@ import pl.wydzials.virtualcamera.reader.ModelCreator;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Sketch extends PApplet {
 
@@ -68,53 +69,19 @@ public class Sketch extends PApplet {
         focalLength = Math.max(focalLength, 50);
     }
 
+    private void updatePoints() {
+        for (Point point : model.getPoints().values()) {
+            point.move(xVelocity, yVelocity, zVelocity);
+            point.rotate(xRotation, yRotation, zRotation);
+        }
+    }
+
     private void renderText() {
         fill(0, 0, 0);
         textSize(20);
         text("FPS: " + Math.round(frameRate), 10, 30);
         text("Focal: " + focalLength, 10, 60);
         text("Rendered lines: " + projectedLines.size(), 10, 90);
-    }
-
-    private void updatePoints() {
-        for (Point point : model.points.values()) {
-            point.move(xVelocity, yVelocity, zVelocity);
-            point.rotate(xRotation, yRotation, zRotation);
-        }
-    }
-
-    private void projectLines() {
-        projectedLines.clear();
-        for (Line line : model.lines) {
-            if (isVisible(line.point1) && isVisible(line.point2)) {
-                Point p1 = projectPoint(line.point1);
-                Point p2 = projectPoint(line.point2);
-
-                projectedLines.add(new Line(p1, p2));
-            }
-        }
-    }
-
-    private void renderFaces() {
-        projectedFaces.clear();
-        fill(204, 102, 0);
-        noStroke();
-
-        for (Face face : model.faces) {
-            if (isVisible(face.getPoint(0)) && isVisible(face.getPoint(1))
-                    && isVisible(face.getPoint(2)) && isVisible(face.getPoint(3))) {
-                float[] quadPoints = new float[8];
-
-                for (int n = 0; n < 4; n++) {
-                    Point projected = projectPoint(face.getPoint(n));
-                    quadPoints[2 * n] = (float) projected.x;
-                    quadPoints[2 * n + 1] = (float) projected.y;
-                }
-
-                quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
-                        quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
-            }
-        }
     }
 
     private Point projectPoint(Point point) {
@@ -125,8 +92,16 @@ public class Sketch extends PApplet {
         return new Point(x, y, z);
     }
 
-    private boolean isVisible(Point point) {
-        return point.z > 0;
+    private void projectLines() {
+        projectedLines.clear();
+        for (Line line : model.getLines()) {
+            if (areVisible(line.point1) && areVisible(line.point2)) {
+                Point p1 = projectPoint(line.point1);
+                Point p2 = projectPoint(line.point2);
+
+                projectedLines.add(new Line(p1, p2));
+            }
+        }
     }
 
     private void renderLines() {
@@ -141,12 +116,28 @@ public class Sketch extends PApplet {
         }
     }
 
-    private void renderPoint(Point point) {
-        if (isVisible(point)) {
-            fill(255, 255, 255);
-            circle((float) point.x, (float) point.y, (float) (60000 / point.z));
-            textSize((float) (40000 / point.z));
+    private void renderFaces() {
+        projectedFaces.clear();
+        noStroke();
+
+        for (Face face : model.getFaces()) {
+            if (areVisible(face.getPoints())) {
+                float[] quadPoints = new float[8];
+                for (int n = 0; n < 4; n++) {
+                    Point projected = projectPoint(face.getPoint(n));
+                    quadPoints[2 * n] = (float) projected.x;
+                    quadPoints[2 * n + 1] = (float) projected.y;
+                }
+
+                fill(face.getColor().getRed(), face.getColor().getBlue(), face.getColor().getGreen());
+                quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
+                        quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
+            }
         }
+    }
+
+    private boolean areVisible(Point... points) {
+        return Arrays.stream(points).allMatch(point -> point.z > 0);
     }
 
     public void keyPressed() {

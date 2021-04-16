@@ -45,12 +45,12 @@ public class ModelCreator {
     }
 
     public void generateRandomCubes(int n) {
-        Random r = new Random();
+        Random random = new Random();
         for (int i = 0; i < n; i++) {
-            double x = r.nextDouble() * 40000 - 20000;
-            double y = r.nextDouble() * 40000 - 20000;
-            double z = r.nextDouble() * 40000 - 20000;
-            double len = r.nextDouble() * 2000 + 500;
+            double x = random.nextDouble() * 40000 - 20000;
+            double y = random.nextDouble() * 40000 - 20000;
+            double z = random.nextDouble() * 40000 - 20000;
+            double len = random.nextDouble() * 2000 + 500;
 
             CubeDTO cube = new CubeDTO(x, y, z, len, len, len);
             addLines(cube.toLines());

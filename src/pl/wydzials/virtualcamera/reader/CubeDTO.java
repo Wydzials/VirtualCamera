@@ -3,7 +3,9 @@ package pl.wydzials.virtualcamera.reader;
 import pl.wydzials.virtualcamera.model.Face;
 import pl.wydzials.virtualcamera.model.Point;
 
+import java.awt.*;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class CubeDTO {
@@ -54,6 +56,13 @@ public class CubeDTO {
         // left and right
         faces.add(new Face(vertices[0], vertices[3], vertices[7], vertices[4]));
         faces.add(new Face(vertices[1], vertices[2], vertices[6], vertices[5]));
+
+        Random random = new Random();
+        Color color = new Color(
+                random.nextInt(256),
+                random.nextInt(256),
+                random.nextInt(256));
+        faces.forEach(face -> face.setColor(color));
 
         return faces;
     }
