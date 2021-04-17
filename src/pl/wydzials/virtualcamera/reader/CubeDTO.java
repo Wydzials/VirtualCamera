@@ -58,11 +58,14 @@ public class CubeDTO {
         faces.add(new Face(vertices[1], vertices[2], vertices[6], vertices[5]));
 
         Random random = new Random();
-        Color color = new Color(
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256));
-        faces.forEach(face -> face.setColor(color));
+
+        for (Face face : faces) {
+            Color color = new Color(
+                    random.nextInt(256),
+                    random.nextInt(256),
+                    random.nextInt(256));
+            face.setColor(color);
+        }
 
         return faces;
     }

@@ -93,6 +93,6 @@ public class Point {
     }
 
     public String key() {
-        return "%s-%s-%s".formatted(x, y, z);
+        return "%s,%s,%s".formatted(x, y, z);
     }
 }

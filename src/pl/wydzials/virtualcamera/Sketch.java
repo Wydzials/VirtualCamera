@@ -1,6 +1,7 @@
 package pl.wydzials.virtualcamera;
 
 import pl.wydzials.virtualcamera.bsp.BinarySearchPartitioning;
+import pl.wydzials.virtualcamera.bsp.Geometry;
 import pl.wydzials.virtualcamera.bsp.TreeNode;
 import pl.wydzials.virtualcamera.model.Face;
 import pl.wydzials.virtualcamera.model.Line;
@@ -41,11 +42,10 @@ public class Sketch extends PApplet {
 
         ModelCreator creator = new ModelCreator();
         creator.readCubesFromFile("data/model.json");
-//        creator.generateRandomCubes(10);
+        //creator.generateRandomCubes(100);
         model = creator.getModel();
 
         facesTree = BinarySearchPartitioning.buildTree(model.getFaces());
-        System.out.println(facesTree);
     }
 
     public void draw() {
@@ -59,7 +59,7 @@ public class Sketch extends PApplet {
             projectLines();
 
             renderFaces(facesTree);
-            renderLines();
+            //renderLines();
             renderText();
         }
     }
@@ -86,7 +86,7 @@ public class Sketch extends PApplet {
         textSize(20);
         text("FPS: " + Math.round(frameRate), 10, 30);
         text("Focal: " + focalLength, 10, 60);
-        text("Rendered lines: " + projectedLines.size(), 10, 90);
+        //text("Rendered lines: " + projectedLines.size(), 10, 90);
     }
 
     private Point projectPoint(Point point) {
@@ -125,11 +125,31 @@ public class Sketch extends PApplet {
         if (tree == null) {
             return;
         }
-        noStroke();
+        double[] planeIndexes = Geometry.calcThePlane(Arrays.asList(tree.key.getPoints()));
 
-        renderFaces(tree.left);
-        renderFace(tree.key);
-        renderFaces(tree.right);
+        int leftSameSide = -10;
+        int rightSameSide = -10;
+
+        if (tree.left != null) {
+            leftSameSide = Geometry.areFaceAndPointSameSide(tree.left.key, new Point(0, 0, 0), planeIndexes);
+        }
+        if (tree.right != null) {
+            rightSameSide = Geometry.areFaceAndPointSameSide(tree.right.key, new Point(0, 0, 0), planeIndexes);
+        }
+
+        if (leftSameSide == 1 || rightSameSide == -1) {
+            renderFaces(tree.right);
+            renderFace(tree.key);
+            renderFaces(tree.left);
+        } else if (leftSameSide == -1 || rightSameSide == 1) {
+            renderFaces(tree.left);
+            renderFace(tree.key);
+            renderFaces(tree.right);
+        } else {
+            renderFaces(tree.left);
+            renderFace(tree.key);
+            renderFaces(tree.right);
+        }
     }
 
     private void renderFace(Face face) {
@@ -141,6 +161,7 @@ public class Sketch extends PApplet {
                 quadPoints[2 * n + 1] = (float) projected.y;
             }
 
+            noStroke();
             fill(face.getColor().getRed(), face.getColor().getBlue(), face.getColor().getGreen());
             quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
                     quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
