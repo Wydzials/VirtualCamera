@@ -86,16 +86,20 @@ public class Geometry {
         Point firstPoint = findPoint(orderedPoints[0], orderedPoints[1], planeIndexes);
         Point secPoint = findPoint(orderedPoints[2], orderedPoints[3], planeIndexes);
 
-        System.out.println(firstPoint + " " + secPoint);
+        System.out.println("Pierwsza ściana: " + oneSidePoints[0] + " " + oneSidePoints[1] + " " + secPoint + " " + firstPoint);
+        System.out.println("Druga ściana: " + secSidePoints[0] + " " + secSidePoints[1] + " " + secPoint + " " + firstPoint);
+        System.out.println();
 
-        Face firstFace = new Face(oneSidePoints[0], oneSidePoints[1], firstPoint, secPoint);
-        Face secFace = new Face(secSidePoints[0], secSidePoints[1], firstPoint, secPoint);
+        Face firstFace = new Face(oneSidePoints[0], oneSidePoints[1], secPoint, firstPoint);
+        Face secFace = new Face(secSidePoints[0], secSidePoints[1], secPoint, firstPoint);
         return new Face[]{firstFace, secFace};
     }
 
     private static Point findPoint(Point firstPoint, Point secPoint, double[] planeIndexes) {
         double[] vector = calculateVector(firstPoint, secPoint);
-        double variableT = -(planeIndexes[0] * firstPoint.x + planeIndexes[1] * firstPoint.y + planeIndexes[2] * firstPoint.z + planeIndexes[3]) / (vector[0] + vector[1] + vector[2]);
+        double numerator = planeIndexes[0] * firstPoint.x + planeIndexes[1] * firstPoint.y + planeIndexes[2] * firstPoint.z + planeIndexes[3];
+        double denominator = planeIndexes[0] * vector[0] + planeIndexes[1] * vector[1] + planeIndexes[2] * vector[2];
+        double variableT = -(numerator) / (denominator);
 
         return new Point(firstPoint.x + variableT * vector[0], firstPoint.y + variableT * vector[1], firstPoint.z + variableT * vector[2]);
     }

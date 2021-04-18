@@ -42,7 +42,7 @@ public class BinarySearchPartitioning {
                 for (Point singlePoint : face.getPoints()) {
                     int side = Geometry.areTwoPointsSameSide(relativePoint, singlePoint, planeIndexes);
                     if (side == 1)
-                        firstSidePoint[firstCount++] = singlePoint; //Na przybliżeniu się wywala z powodu relatywnych wielkości
+                        firstSidePoint[firstCount++] = singlePoint;
                     else
                         secSidePoint[secCount++] = singlePoint;
                 }

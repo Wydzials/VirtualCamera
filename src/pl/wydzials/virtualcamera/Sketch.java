@@ -42,7 +42,7 @@ public class Sketch extends PApplet {
 
         ModelCreator creator = new ModelCreator();
         creator.readCubesFromFile("data/model.json");
-        //creator.generateRandomCubes(100);
+//        creator.generateRandomCubes(100);
         model = creator.getModel();
 
         facesTree = BinarySearchPartitioning.buildTree(model.getFaces());
