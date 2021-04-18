@@ -47,6 +47,8 @@ public class BinarySearchPartitioning {
                         secSidePoint[secCount++] = singlePoint;
                 }
                 Face[] dividedFace = Geometry.divideFace(firstSidePoint, secSidePoint, planeIndexes);
+                dividedFace[0].setColor(face.getColor());
+                dividedFace[1].setColor(face.getColor());
                 right.add(dividedFace[0]);
                 left.add(dividedFace[1]);
             }

@@ -18,7 +18,6 @@ public class Geometry {
         double[] planeIndexes = calcThePlane(pointArr);
         Point pointD = new Point(1, -5, 1);
         Point pointE = new Point(2, -5, 1);
-//        Point pointE = new Point(-6.29,1.07,-3.2);
 
         int sideDecision = areTwoPointsSameSide(pointD, pointE, planeIndexes);
         if (sideDecision == -1)
@@ -27,7 +26,6 @@ public class Geometry {
             System.out.println("Są po tej samej stronie");
         else
             System.out.println("Jeden z punktów leży na płaszczyźnie");
-
     }
 
     public static double[] calcThePlane(List<Point> points) {
@@ -51,7 +49,7 @@ public class Geometry {
         double firstValue = firstPoint.x * planeIndexes[0] + firstPoint.y * planeIndexes[1] + firstPoint.z * planeIndexes[2] + planeIndexes[3];
         double secValue = secPoint.x * planeIndexes[0] + secPoint.y * planeIndexes[1] + secPoint.z * planeIndexes[2] + planeIndexes[3];
 
-        if (java.lang.Math.abs(firstValue) < 10 || java.lang.Math.abs(secValue) < 10) {
+        if (Math.abs(firstValue) < 10 || Math.abs(secValue) < 10) {
             return 0;
         }
         if (firstValue * secValue > 0) {
@@ -71,13 +69,13 @@ public class Geometry {
         long zeroCount = Arrays.stream(sameSides).filter(i -> i == 0).count();
 
         if (zeroCount == 4) {
-            return 0; // w plaszczyznie
+            return 0;
         } else if (sameCount == 4 || (zeroCount > 0 && sameCount > oppositeCount)) {
             return 1;
         } else if (oppositeCount == 4 || (zeroCount > 0 && oppositeCount > sameCount)) {
             return -1;
         } else {
-            return -10; // do podzialu
+            return -10;
         }
     }
 
@@ -86,12 +84,16 @@ public class Geometry {
         Point firstPoint = findPoint(orderedPoints[0], orderedPoints[1], planeIndexes);
         Point secPoint = findPoint(orderedPoints[2], orderedPoints[3], planeIndexes);
 
-        System.out.println("Pierwsza ściana: " + oneSidePoints[0] + " " + oneSidePoints[1] + " " + secPoint + " " + firstPoint);
-        System.out.println("Druga ściana: " + secSidePoints[0] + " " + secSidePoints[1] + " " + secPoint + " " + firstPoint);
-        System.out.println();
+        Face firstFace = new Face(oneSidePoints[0], oneSidePoints[1], firstPoint, secPoint);
+        Face secFace = new Face(secSidePoints[0], secSidePoints[1], firstPoint, secPoint);
 
-        Face firstFace = new Face(oneSidePoints[0], oneSidePoints[1], secPoint, firstPoint);
-        Face secFace = new Face(secSidePoints[0], secSidePoints[1], secPoint, firstPoint);
+        if (pointsDistance(oneSidePoints[1], secPoint) < pointsDistance(oneSidePoints[1], firstPoint)) {
+            firstFace = new Face(oneSidePoints[0], oneSidePoints[1], secPoint, firstPoint);
+        }
+        if (pointsDistance(secSidePoints[1], secPoint) < pointsDistance(secSidePoints[1], firstPoint)) {
+            secFace = new Face(secSidePoints[0], secSidePoints[1], secPoint, firstPoint);
+        }
+
         return new Face[]{firstFace, secFace};
     }
 
@@ -107,8 +109,8 @@ public class Geometry {
     private static Point[] determinePointPairs(Point[] oneSidePoints, Point[] secSidePoints) {
         double[] firstVector = calculateVector(oneSidePoints[0], secSidePoints[0]);
         double[] secVector = calculateVector(oneSidePoints[0], secSidePoints[1]);
-        double firstVectorLength = java.lang.Math.sqrt(firstVector[0] * firstVector[0] + firstVector[1] * firstVector[1] + firstVector[2] * firstVector[2]);
-        double secVectorLength = java.lang.Math.sqrt(secVector[0] * secVector[0] + secVector[1] * secVector[1] + secVector[2] * secVector[2]);
+        double firstVectorLength = Math.sqrt(firstVector[0] * firstVector[0] + firstVector[1] * firstVector[1] + firstVector[2] * firstVector[2]);
+        double secVectorLength = Math.sqrt(secVector[0] * secVector[0] + secVector[1] * secVector[1] + secVector[2] * secVector[2]);
 
         if (firstVectorLength < secVectorLength) {
             return new Point[]{oneSidePoints[0], secSidePoints[0], oneSidePoints[1], secSidePoints[1]};
@@ -118,5 +120,10 @@ public class Geometry {
 
     private static double[] calculateVector(Point firstPoint, Point secPoint) {
         return new double[]{firstPoint.x - secPoint.x, firstPoint.y - secPoint.y, firstPoint.z - secPoint.z};
+    }
+
+    private static double pointsDistance(Point a, Point b) {
+        double[] vector = calculateVector(a, b);
+        return Math.sqrt(Arrays.stream(vector).map(v -> v * v).sum());
     }
 }

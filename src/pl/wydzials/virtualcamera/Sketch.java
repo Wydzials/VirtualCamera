@@ -33,7 +33,7 @@ public class Sketch extends PApplet {
     double zRotation = 0;
 
     public void settings() {
-        size(1400, 800);
+        size(1700, 900);
     }
 
     public void setup() {
@@ -42,10 +42,31 @@ public class Sketch extends PApplet {
 
         ModelCreator creator = new ModelCreator();
         creator.readCubesFromFile("data/model.json");
-//        creator.generateRandomCubes(100);
+        creator.generateRandomCubes(100);
         model = creator.getModel();
 
         facesTree = BinarySearchPartitioning.buildTree(model.getFaces());
+
+        updatePointsFromTree(facesTree);
+    }
+
+    private void updatePointsFromTree(TreeNode<Face> faces) {
+        if (faces == null) {
+            return;
+        }
+        Face face = faces.key;
+
+        updatePointsFromTree(faces.left);
+        for (int i = 0; i < face.getPoints().length; i++) {
+            Point point = face.getPoint(i);
+
+            if (!model.getPoints().containsKey(point.key())) {
+                model.getPoints().put(point.key(), point);
+            } else {
+                face.setPoint(i, model.getPoints().get(point.key()));
+            }
+        }
+        updatePointsFromTree(faces.right);
     }
 
     public void draw() {
@@ -54,13 +75,9 @@ public class Sketch extends PApplet {
 
             updateSpeedFromFramerate();
             updateFocalLength();
-
             updatePoints();
-            projectLines();
 
             renderFaces(facesTree);
-            //renderLines();
-            renderText();
         }
     }
 
@@ -97,27 +114,17 @@ public class Sketch extends PApplet {
         return new Point(x, y, z);
     }
 
-    private void projectLines() {
-        projectedLines.clear();
+    private void renderLines() {
+        strokeCap(ROUND);
+        stroke(0, 0, 0);
         for (Line line : model.getLines()) {
             if (areVisible(line.point1) && areVisible(line.point2)) {
                 Point p1 = projectPoint(line.point1);
                 Point p2 = projectPoint(line.point2);
 
-                projectedLines.add(new Line(p1, p2));
+                strokeWeight(2);
+                line((float) p1.x, (float) p1.y, (float) p2.x, (float) p2.y);
             }
-        }
-    }
-
-    private void renderLines() {
-        strokeCap(ROUND);
-        stroke(0, 0, 0);
-        for (Line line : projectedLines) {
-            Point p1 = line.point1;
-            Point p2 = line.point2;
-
-            strokeWeight(2);
-            line((float) p1.x, (float) p1.y, (float) p2.x, (float) p2.y);
         }
     }
 
@@ -161,8 +168,9 @@ public class Sketch extends PApplet {
                 quadPoints[2 * n + 1] = (float) projected.y;
             }
 
-            noStroke();
+            stroke(face.getColor().getRed(), face.getColor().getBlue(), face.getColor().getGreen());
             fill(face.getColor().getRed(), face.getColor().getBlue(), face.getColor().getGreen());
+
             quad(quadPoints[0], quadPoints[1], quadPoints[2], quadPoints[3],
                     quadPoints[4], quadPoints[5], quadPoints[6], quadPoints[7]);
         }
