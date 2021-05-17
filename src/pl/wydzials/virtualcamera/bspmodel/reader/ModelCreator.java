@@ -1,10 +1,10 @@
-package pl.wydzials.virtualcamera.reader;
+package pl.wydzials.virtualcamera.bspmodel.reader;
 
 import com.google.gson.Gson;
-import pl.wydzials.virtualcamera.model.Face;
-import pl.wydzials.virtualcamera.model.Line;
-import pl.wydzials.virtualcamera.model.Model;
-import pl.wydzials.virtualcamera.model.Point;
+import pl.wydzials.virtualcamera.bspmodel.model.Face;
+import pl.wydzials.virtualcamera.bspmodel.model.Line;
+import pl.wydzials.virtualcamera.bspmodel.model.Model;
+import pl.wydzials.virtualcamera.bspmodel.model.Point;
 
 import java.io.IOException;
 import java.nio.file.Files;

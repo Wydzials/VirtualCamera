@@ -1,13 +1,13 @@
-package pl.wydzials.virtualcamera;
+package pl.wydzials.virtualcamera.bspmodel;
 
-import pl.wydzials.virtualcamera.bsp.BinarySearchPartitioning;
-import pl.wydzials.virtualcamera.bsp.Geometry;
-import pl.wydzials.virtualcamera.bsp.TreeNode;
-import pl.wydzials.virtualcamera.model.Face;
-import pl.wydzials.virtualcamera.model.Line;
-import pl.wydzials.virtualcamera.model.Model;
-import pl.wydzials.virtualcamera.model.Point;
-import pl.wydzials.virtualcamera.reader.ModelCreator;
+import pl.wydzials.virtualcamera.bspmodel.bsp.BinarySearchPartitioning;
+import pl.wydzials.virtualcamera.bspmodel.bsp.Geometry;
+import pl.wydzials.virtualcamera.bspmodel.bsp.TreeNode;
+import pl.wydzials.virtualcamera.bspmodel.model.Face;
+import pl.wydzials.virtualcamera.bspmodel.model.Line;
+import pl.wydzials.virtualcamera.bspmodel.model.Model;
+import pl.wydzials.virtualcamera.bspmodel.model.Point;
+import pl.wydzials.virtualcamera.bspmodel.reader.ModelCreator;
 import processing.core.PApplet;
 
 import java.util.ArrayList;

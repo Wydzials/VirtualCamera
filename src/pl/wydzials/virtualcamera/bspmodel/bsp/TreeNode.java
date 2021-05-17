@@ -1,4 +1,4 @@
-package pl.wydzials.virtualcamera.bsp;
+package pl.wydzials.virtualcamera.bspmodel.bsp;
 
 public class TreeNode<T> {
 

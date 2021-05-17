@@ -1,4 +1,4 @@
-package pl.wydzials.virtualcamera.reader;
+package pl.wydzials.virtualcamera.bspmodel.reader;
 
 public class LineDTO {
     public double x1, y1, z1, x2, y2, z2;

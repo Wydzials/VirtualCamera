@@ -1,4 +1,4 @@
-package pl.wydzials.virtualcamera.model;
+package pl.wydzials.virtualcamera.bspmodel.model;
 
 import java.util.Map;
 import java.util.Set;

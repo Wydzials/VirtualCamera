@@ -1,7 +1,7 @@
-package pl.wydzials.virtualcamera.reader;
+package pl.wydzials.virtualcamera.bspmodel.reader;
 
-import pl.wydzials.virtualcamera.model.Face;
-import pl.wydzials.virtualcamera.model.Point;
+import pl.wydzials.virtualcamera.bspmodel.model.Face;
+import pl.wydzials.virtualcamera.bspmodel.model.Point;
 
 import java.awt.*;
 import java.util.HashSet;

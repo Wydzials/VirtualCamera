@@ -1,4 +1,4 @@
-package pl.wydzials.virtualcamera;
+package pl.wydzials.virtualcamera.bspmodel;
 
 import processing.core.PApplet;
 
