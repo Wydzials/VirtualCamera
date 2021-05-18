@@ -2,10 +2,10 @@ package pl.wydzials.virtualcamera.phongmodel;
 
 import processing.core.PApplet;
 
+import java.awt.*;
+
 //TODOS
-//Normalizacja wektora
-    //Aby znormalizować wektor trzeba policzyć jego długość i każdy z wymiarów podzielić przez tą długość
-    //We wzorze Phonga zastosowano iloczyn skalarny dwóch znormalizowanych wektorów
+//Napisać wyliczenie trzech rodzai natężeń
 
 public class Main {
 
