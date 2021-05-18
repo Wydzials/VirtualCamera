@@ -32,10 +32,11 @@ public class Sketch extends PApplet {
         while (y + pixelSize/2 < radius){
             float xBoundary = sqrt(radius*radius - (y+pixelSize/2)*(y+pixelSize/2));
             while (x+pixelSize/2 < xBoundary){
-                pixelArr.add(new Pixel(x,y));
-                pixelArr.add(new Pixel(-x+pixelSize,y));
-                pixelArr.add(new Pixel(x,-y+pixelSize));
-                pixelArr.add(new Pixel(-x+pixelSize,-y+pixelSize));
+                float z = circleZ + sqrt(radius*radius - x*x - y*y);
+                pixelArr.add(new Pixel(x,y, z));
+                pixelArr.add(new Pixel(-x+pixelSize,y, z));
+                pixelArr.add(new Pixel(x,-y+pixelSize, z));
+                pixelArr.add(new Pixel(-x+pixelSize,-y+pixelSize, z));
                 x = x + pixelSize;
             }
             x=0;
@@ -43,6 +44,7 @@ public class Sketch extends PApplet {
         }
         return pixelArr;
     }
+
 
     public void draw() {
         if (keyPressed || frameCount == 1) {
