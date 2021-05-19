@@ -150,7 +150,7 @@ public class Sketch extends PApplet {
             noStroke();
             for (Pixel pixel : pixelArr) {
                 Color pixelColor = sumColors(calcAmbient(pixel), calcDiffuse(pixel), calcSpecular(pixel));
-                fill(pixelColor.getRGB());\
+                fill(pixelColor.getRGB());
                 square(pixel.getX(), pixel.getY(), pixelSize);
             }
         }
