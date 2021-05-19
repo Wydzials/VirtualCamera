@@ -16,14 +16,21 @@ public class Sketch extends PApplet {
 
     private final float lightX = 400;
     private final float lightY = 400;
-    private final float lightZ = 0;
+    private final float lightZ = -1000;
+
+    private final float cameraX = 0;
+    private final float cameraY = 0;
+    private final float cameraZ = 0;
 
     //Wsþółczynniki napisane arbitralnie
-    private final float ka = 0.1f;
-    private final float faat = 0.1f;
-    private final float kd = 0.1f;
-    private final float ks = 0.1f;
-    private final float n = 2f;
+    private final float ka = 0.4f;
+    private final float faat = 0.5f;
+    private final float kd = 0.7f;
+    private final float ks = 0.9f;
+    private final float n = 5f;
+
+    private Color circleStandardColor = new Color(200,50,100);
+    private Color lightStandardColor = new Color(70,10,200);
 
     public void settings() {
         size(1700, 900);
@@ -73,20 +80,54 @@ public class Sketch extends PApplet {
         float[] newVector = {vector[0]/vectorLength, vector[1]/vectorLength, vector[2]/vectorLength};
         return newVector;
     }
+    
+    private float scalarMultVector(float[] firstVector, float[] secVector){
+        float sum=0;
+        for (int i = 0; i < firstVector.length; i++)
+            sum += firstVector[i]*secVector[i];
+        return sum;
+    }
 
     private Color calcAmbient(Pixel pixel){
-        //TODO
-        return null;
+        float[] color_arr = {circleStandardColor.getRed(), circleStandardColor.getGreen(), circleStandardColor.getBlue()};
+        for(int i=0; i<3; i++){
+            color_arr[i] = color_arr[i]*ka;
+        }
+        return new Color((int)color_arr[0], (int)color_arr[1], (int)color_arr[2]);
     }
 
     private Color calcDiffuse(Pixel pixel){
-        //TODO
-        return null;
+        float[] color_arr = {lightStandardColor.getRed(), lightStandardColor.getGreen(), lightStandardColor.getBlue()};
+        float[] LVector = {lightX - pixel.getX(), lightY - pixel.getY(), lightZ - pixel.getZ()};
+        float multVecotrNL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
+        multVecotrNL = max(0,multVecotrNL);
+        for(int i=0; i<3; i++){
+            color_arr[i] = faat*kd*multVecotrNL*color_arr[i];
+        }
+        return new Color((int)color_arr[0], (int)color_arr[1], (int)color_arr[2]);
+    }
+
+    private float calcAlfa(Pixel pixel){
+        float[] LVector = {lightX - pixel.getX(), lightY - pixel.getY(), lightZ - pixel.getZ()};
+        float multVecotrNL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
+        float betaAngle = acos(multVecotrNL);
+        float[] VVector = {cameraX - pixel.getX(), cameraY - pixel.getY(), cameraZ - pixel.getZ()};
+        float multVecotrNV = scalarMultVector(pixel.getNormalVector(), normalizeVector(VVector));
+        float alfaAngle = acos(multVecotrNV) - betaAngle;
+        float alfaCos = cos(alfaAngle);
+        alfaCos = max(0,alfaCos);
+
+        return alfaCos;
     }
 
     private Color calcSpecular(Pixel pixel){
-        //TODO
-        return null;
+        float[] color_arr = {lightStandardColor.getRed(), lightStandardColor.getGreen(), lightStandardColor.getBlue()};
+        float alfaCos = calcAlfa(pixel);
+
+        for(int i=0; i<3; i++){
+            color_arr[i] = faat*ks*pow(alfaCos,n)*color_arr[i];
+        }
+        return new Color((int)color_arr[0], (int)color_arr[1], (int)color_arr[2]);
     }
 
     private Color sumColors(Color ambientColor, Color diffuseColor, Color specularColor){
@@ -108,10 +149,8 @@ public class Sketch extends PApplet {
             ArrayList<Pixel> pixelArr = createPixelArray();
             noStroke();
             for (Pixel pixel : pixelArr) {
-//                Color pixelColor = sumColors(calcAmbient(pixel), calcDiffuse(pixel), calcSpecular(pixel));
-//                fill(pixelColor.getRGB());
-                Color mockColor = new Color(100,100,100);
-                fill(mockColor.getRGB());
+                Color pixelColor = sumColors(calcAmbient(pixel), calcDiffuse(pixel), calcSpecular(pixel));
+                fill(pixelColor.getRGB());\
                 square(pixel.getX(), pixel.getY(), pixelSize);
             }
         }

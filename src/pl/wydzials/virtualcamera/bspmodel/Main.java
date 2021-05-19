@@ -2,7 +2,6 @@ package pl.wydzials.virtualcamera.bspmodel;
 
 import processing.core.PApplet;
 
-
 public class Main {
 
     public static void main(String[] args) {

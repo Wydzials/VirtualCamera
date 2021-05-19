@@ -14,6 +14,11 @@ public class Pixel {
         this.z = z;
         this.normalVector = normalVector;
     }
+
+    public float[] getNormalVector() {
+        return normalVector;
+    }
+
     public float getX() {
         return x;
     }
