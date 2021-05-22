@@ -31,8 +31,8 @@ public class Sketch extends PApplet {
     private final float ka = 0.3f; //Musi być mniejsze niż 0.33
     private final float faat = 0.4f; //Najbezpieczniej jak jest mniejsze od 0.33 ale 0.4 powinno styknąć
     private final float kd = 0.5f; //Od 0.25 do 0.95
-    private final float ks = 0.5f; //Od 0.25 do 0.95
-    private final float n = 50f; //Od 2 do 100
+    private final float ks = 0.75f; //Od 0.25 do 0.95
+    private final float n = 100f; //Od 2 do 100
 
     private final Color circleStandardColor = new Color(200, 20, 50);
     private final Color lightStandardColor = new Color(255, 200, 200);
@@ -106,26 +106,25 @@ public class Sketch extends PApplet {
     private Color calcDiffuse(Pixel pixel) {
         float[] color_arr = {lightStandardColor.getRed(), lightStandardColor.getGreen(), lightStandardColor.getBlue()};
         float[] LVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), lightX, lightY, lightZ);
-        float multVecotrNL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
-        multVecotrNL = max(0, multVecotrNL);
+        float multVectorNL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
+        multVectorNL = max(0, multVectorNL);
         for (int i = 0; i < 3; i++) {
-            color_arr[i] = faat * kd * multVecotrNL * color_arr[i];
+            color_arr[i] = faat * kd * multVectorNL * color_arr[i];
         }
         return new Color((int) color_arr[0], (int) color_arr[1], (int) color_arr[2]);
     }
 
-    private float calcAlfa(Pixel pixel) {
-        float[] LVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), lightX, lightY, lightZ);
-        float multVecotrNL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
-        float betaAngle = acos(multVecotrNL);
-        float[] VVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), cameraX, cameraY, cameraZ);
-        float multVecotrNV = scalarMultVector(pixel.getNormalVector(), normalizeVector(VVector));
-        float alfaAngle = acos(multVecotrNV) - betaAngle;
-        float alfaCos = cos(alfaAngle);
-        alfaCos = max(0, alfaCos);
-
-        return alfaCos;
+private float calcAlfa(Pixel pixel) {
+    float[] LVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), lightX, lightY, lightZ);
+    LVector = normalizeVector(LVector);
+    float[] RVector = {0f, 0f, 0f};
+    for(int i=0; i<3; i++){
+        RVector[i] = pixel.getNormalVector()[i]*2 - LVector[i];
     }
+    float multVectorVL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
+    multVectorVL = max(0, multVectorVL);
+    return multVectorVL;
+}
 
     private Color calcSpecular(Pixel pixel) {
         float[] color_arr = {lightStandardColor.getRed(), lightStandardColor.getGreen(), lightStandardColor.getBlue()};
@@ -162,7 +161,7 @@ public class Sketch extends PApplet {
 
             PImage img = createImage(width, height, RGB);
             for (Pixel pixel : pixelArr) {
-                Color pixelColor = sumColors(calcAmbient(), calcDiffuse(pixel), calcSpecular(pixel));
+                Color pixelColor = sumColors(calcAmbient(),calcDiffuse(pixel), calcSpecular(pixel));
 
                 int x = (int) pixel.getX() + width / 2;
                 int y = (int) pixel.getY() + height / 2;
