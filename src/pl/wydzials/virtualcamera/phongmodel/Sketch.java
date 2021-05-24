@@ -114,17 +114,31 @@ public class Sketch extends PApplet {
         return new Color((int) color_arr[0], (int) color_arr[1], (int) color_arr[2]);
     }
 
-private float calcAlfa(Pixel pixel) {
+private float calcAlfa(Pixel pixel) {//Powinno nie działać
     float[] LVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), lightX, lightY, lightZ);
     LVector = normalizeVector(LVector);
     float[] RVector = {0f, 0f, 0f};
     for(int i=0; i<3; i++){
         RVector[i] = pixel.getNormalVector()[i]*2 - LVector[i];
     }
-    float multVectorVL = scalarMultVector(pixel.getNormalVector(), normalizeVector(LVector));
-    multVectorVL = max(0, multVectorVL);
-    return multVectorVL;
+    float multVectorVN = scalarMultVector(pixel.getNormalVector(), normalizeVector(RVector));
+    multVectorVN = max(0, multVectorVN);
+    return multVectorVN;
 }
+//    private float calcAlfa(Pixel pixel) {
+//        float[] LVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), lightX, lightY, lightZ);
+//        LVector = normalizeVector(LVector);
+//        float[] RVector = {0f, 0f, 0f};
+//        for(int i=0; i<3; i++){
+//            RVector[i] = pixel.getNormalVector()[i]*2 - LVector[i];
+//        }
+//        float[] VVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), cameraX, cameraY, cameraZ);
+//        VVector = normalizeVector(VVector);
+//
+//        float multVectorVR = scalarMultVector(VVector, normalizeVector(RVector));
+//        multVectorVR = max(0, multVectorVR);
+//        return multVectorVR;
+//    }
 
     private Color calcSpecular(Pixel pixel) {
         float[] color_arr = {lightStandardColor.getRed(), lightStandardColor.getGreen(), lightStandardColor.getBlue()};
