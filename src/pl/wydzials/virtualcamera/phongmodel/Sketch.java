@@ -27,15 +27,16 @@ public class Sketch extends PApplet {
 
     private final Set<Character> pressedKeys = new HashSet<>();
 
-    //Wsþółczynniki napisane arbitralnie
-    private final float ka = 0.3f; //Musi być mniejsze niż 0.33
-    private final float faat = 0.4f; //Najbezpieczniej jak jest mniejsze od 0.33 ale 0.4 powinno styknąć
-    private float kd = 0.5f; //Od 0.25 do 0.95
-    private float ks = 0.75f; //Od 0.25 do 0.95
-    private float n = 100f; //Od 2 do 100
+    private final float ka = 0.3f; // max 0.33
+    private final float faat = 0.4f; // max 0.4
+    private float kd = 0.5f; // od 0.25 do 0.95
+    private float ks = 0.75f; // od 0.25 do 0.95
+    private float n = 100f; // od 2 do 100
 
     private final Color circleStandardColor = new Color(200, 20, 50);
     private final Color lightStandardColor = new Color(255, 200, 200);
+
+    private int material = 0;
 
     ArrayList<Pixel> pixelArr = createPixelArray();
 
@@ -51,8 +52,8 @@ public class Sketch extends PApplet {
 
     private ArrayList<Pixel> createPixelArray() {
         ArrayList<Pixel> pixelArr = new ArrayList<>();
-        float y = 0;
-        float x = 0;
+        int y = 0;
+        int x = 0;
         while (y + pixelSize / 2 < radius) {
             float xBoundary = sqrt(radius * radius - (y + pixelSize / 2) * (y + pixelSize / 2));
             while (x + pixelSize / 2 < xBoundary) {
@@ -114,34 +115,18 @@ public class Sketch extends PApplet {
         return new Color((int) color_arr[0], (int) color_arr[1], (int) color_arr[2]);
     }
 
-private float calcAlfa(Pixel pixel) {//Powinno nie działać
-    float[] LVector = calcVector(lightX, lightY, lightZ, pixel.getX(), pixel.getY(), pixel.getZ());
-    LVector = normalizeVector(LVector);
-    float multVectorLN = scalarMultVector(pixel.getNormalVector(), LVector);
-    float[] RVector = {0f, 0f, 0f};
-    for(int i=0; i<3; i++){
-        RVector[i] = LVector[i] - 2*multVectorLN*pixel.getNormalVector()[i];
+    private float calcAlfa(Pixel pixel) {
+        float[] LVector = calcVector(lightX, lightY, lightZ, pixel.getX(), pixel.getY(), pixel.getZ());
+        LVector = normalizeVector(LVector);
+        float multVectorLN = scalarMultVector(pixel.getNormalVector(), LVector);
+        float[] RVector = {cameraX, cameraY, cameraZ};
+        for (int i = 0; i < 3; i++) {
+            RVector[i] = LVector[i] - 2 * multVectorLN * pixel.getNormalVector()[i];
+        }
+        float multVectorVN = scalarMultVector(pixel.getNormalVector(), RVector);
+        multVectorVN = max(0, multVectorVN);
+        return multVectorVN;
     }
-    float multVectorVN = scalarMultVector(pixel.getNormalVector(), RVector);
-    multVectorVN = max(0, multVectorVN);
-    return multVectorVN;
-}
-
-//    private float calcAlfa(Pixel pixel) {
-//        float[] LVector = calcVector(lightX, lightY, lightZ, pixel.getX(), pixel.getY(), pixel.getZ());
-//        LVector = normalizeVector(LVector);
-//        float multVectorLN = scalarMultVector(pixel.getNormalVector(), LVector);
-//        float[] RVector = {0f, 0f, 0f};
-//        for(int i=0; i<3; i++){
-//            RVector[i] = LVector[i] - 2*multVectorLN*pixel.getNormalVector()[i];
-//        }
-//        float[] VVector = calcVector(pixel.getX(), pixel.getY(), pixel.getZ(), cameraX, cameraY, cameraZ);
-//        VVector = normalizeVector(VVector);
-//
-//        float multVectorVR = scalarMultVector(VVector, RVector);
-//        multVectorVR = max(0, multVectorVR);
-//        return multVectorVR;
-//    }
 
     private Color calcSpecular(Pixel pixel) {
         float[] color_arr = {lightStandardColor.getRed(), lightStandardColor.getGreen(), lightStandardColor.getBlue()};
@@ -178,19 +163,16 @@ private float calcAlfa(Pixel pixel) {//Powinno nie działać
 
             PImage img = createImage(width, height, RGB);
             for (Pixel pixel : pixelArr) {
-                Color pixelColor = sumColors(calcAmbient(),calcDiffuse(pixel), calcSpecular(pixel));
+                Color pixelColor = sumColors(calcAmbient(), calcDiffuse(pixel), calcSpecular(pixel));
 
                 int x = (int) pixel.getX() + width / 2;
                 int y = (int) pixel.getY() + height / 2;
 
-                if (pixelSize == 1) {
-                    img.pixels[y * width + x] = pixelColor.getRGB();
-                } else {
-                    imageSquare(img, x, y, pixelColor.getRGB(), pixelSize);
-                }
+                imageSquare(img, x, y, pixelColor.getRGB(), pixelSize);
             }
             image(img, 0, 0);
-            text("light position: " + lightX + ", " + lightY + ", " + lightZ, 10, 30);
+            text("Light position: " + (int) lightX + ", " + (int) lightY + ", " + (int) lightZ, 10, 30);
+            text("Preset material (1,2,3,4): " + (material > 0 ? material : "-"), 10, 60);
         }
     }
 
@@ -206,26 +188,29 @@ private float calcAlfa(Pixel pixel) {//Powinno nie działać
         if (pressedKeys.contains('e')) lightZ -= step;
 
         if (pressedKeys.contains('1')) { //No specular
+            material = 1;
             ks = 0;
-            kd=1f;
-            n=2;
+            kd = 1f;
+            n = 2;
         }
         if (pressedKeys.contains('2')) {
+            material = 2;
             ks = 0.25f;
-            kd=0.75f;
-            n=20;
+            kd = 0.75f;
+            n = 20;
         }
         if (pressedKeys.contains('3')) {
+            material = 3;
             ks = 0.5f;
-            kd=0.5f;
-            n=50;
+            kd = 0.5f;
+            n = 50;
         }
         if (pressedKeys.contains('4')) { //Full specular
-            ks=1f;
-            kd=0.3f;
-            n=100;
+            material = 4;
+            ks = 1f;
+            kd = 0.3f;
+            n = 100;
         }
-
     }
 
     public void keyPressed() {
